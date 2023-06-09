@@ -28,12 +28,12 @@ class Blog(Resource):
         """
         args = blog_post_args.parse_args()
         task_name = args["task_name"]
-        if not is_a_duplicate(item=task_name, collection=tasks.values()):
+        if is_a_duplicate(item=task_name, collection=tasks.values()):
+            return {"Error": "task already in list."}, 400
+        else:
             new_task_id = max(tasks.keys()) + 1
             tasks[new_task_id] = task_name
             return {"task": tasks}, 201
-        else:
-            return {"Error": "task already in list."}, 400
 
     def put(self):
         """The put method route will update a task"""
