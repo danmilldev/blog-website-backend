@@ -12,42 +12,42 @@ blog_post_args.add_argument("task_name", type=str, help="The task_name is requir
 class Blog(Resource):
     """This Route is for the main blog requests"""
 
+    def __init__(self):
+        self.args = blog_post_args.parse_args()
+        self.task_id = self.args["task_id"]
+        self.task_name = self.args["task_name"]
+
     def get(self):
         """
         This get method route will
         return all tasks stored in the list.
         """
-        return {"tasks": tasks}, 201
+        return {"tasks": tasks}, 200
 
     def post(self):
         """
         The post method route will if its not a duplicate
         adding the new task send via body to the list.
         """
-        args = blog_post_args.parse_args()
-        task_name = args["task_name"]
-        if task_name is None:
+        if self.task_name is None:
             return {"Error": "task_name is required for adding a new task."}, 400
-        elif is_a_duplicate(item=task_name, collection=tasks.values()):
+        elif is_a_duplicate(item=self.task_name, collection=tasks.values()):
             return {"Error": "task already in list."}, 400
         else:
             new_task_id = max(tasks.keys()) + 1
-            tasks[new_task_id] = task_name
+            tasks[new_task_id] = self.task_name
             return {"tasks": tasks}, 201
 
     def put(self):
         """The put method route will update a task."""
-        args = blog_post_args.parse_args()
-        task_id = args["task_id"]
-        task_name = args["task_name"]
-        if is_a_duplicate(item=task_name, collection=tasks.values()):
+        if is_a_duplicate(item=self.task_name, collection=tasks.values()):
             return {"Error": "task already in list."}, 400
-        elif task_id is None:
+        elif self.task_id is None:
             return {"Error": "task_id is required for the change of an task."}, 400
-        elif task_name is None:
+        elif self.task_name is None:
             return {"Error": "task_name is required for a new task name."}, 400
         else:
-            tasks[task_id] = task_name
+            tasks[self.task_id] = self.task_name
             return {"tasks": tasks}, 201
 
     def delete(self):
@@ -55,12 +55,10 @@ class Blog(Resource):
         The delete method route will delete a task
         depending if the task_id even exists.
         """
-        args = blog_post_args.parse_args()
-        task_id = args["task_id"]
-        if task_id is None:
+        if self.task_id is None:
             return {"Error": "task_id is required for removing the task."}, 400
-        elif task_id not in tasks:
+        elif self.task_id not in tasks:
             return {"Error": "Task with that task_id does not exist."}, 400
         else:
-            del tasks[task_id]
-            return {"tasks": tasks}, 201
+            del tasks[self.task_id]
+            return {"tasks": tasks}, 204
