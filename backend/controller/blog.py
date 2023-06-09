@@ -40,7 +40,9 @@ class Blog(Resource):
         args = blog_post_args.parse_args()
         task_id = args["task_id"]
         task_name = args["task_name"]
-        if task_id is None:
+        if is_a_duplicate(item=task_name, collection=tasks.values()):
+            return {"Error": "task already in list."}, 400
+        elif task_id is None:
             return {"Error": "task_id is required for the change of an task."}, 400
         elif task_name is None:
             return {"Error": "task_name is required for a new task name."}, 400
