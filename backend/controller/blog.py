@@ -31,24 +31,27 @@ class Blog(Resource):
         """
         if self.task_name is None:
             return {"Error": "task_name is required for adding a new task."}, 400
-        elif is_a_duplicate(item=self.task_name, collection=tasks.values()):
+
+        if is_a_duplicate(item=self.task_name, collection=tasks.values()):
             return {"Error": "task already in list."}, 400
-        else:
-            new_task_id = max(tasks.keys()) + 1
-            tasks[new_task_id] = self.task_name
-            return {"tasks": tasks}, 201
+
+        new_task_id = max(tasks.keys()) + 1
+        tasks[new_task_id] = self.task_name
+        return {"tasks": tasks}, 201
 
     def put(self):
         """The put method route will update a task."""
         if is_a_duplicate(item=self.task_name, collection=tasks.values()):
             return {"Error": "task already in list."}, 400
-        elif self.task_id is None:
+
+        if self.task_id is None:
             return {"Error": "task_id is required for the change of an task."}, 400
-        elif self.task_name is None:
+
+        if self.task_name is None:
             return {"Error": "task_name is required for a new task name."}, 400
-        else:
-            tasks[self.task_id] = self.task_name
-            return {"tasks": tasks}, 201
+
+        tasks[self.task_id] = self.task_name
+        return {"tasks": tasks}, 201
 
     def delete(self):
         """
@@ -57,8 +60,9 @@ class Blog(Resource):
         """
         if self.task_id is None:
             return {"Error": "task_id is required for removing the task."}, 400
-        elif self.task_id not in tasks:
+
+        if self.task_id not in tasks:
             return {"Error": "Task with that task_id does not exist."}, 400
-        else:
-            del tasks[self.task_id]
-            return {"tasks": tasks}, 204
+
+        del tasks[self.task_id]
+        return {"tasks": tasks}, 204
