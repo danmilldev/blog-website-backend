@@ -1,3 +1,3 @@
 # blog-website-backend
  
-# simple api backend for the blog-website
+### python backend restful api for the blog website made with vue 
