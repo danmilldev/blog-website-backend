@@ -32,6 +32,9 @@ class Blog(Resource):
         if self.task_name is None:
             return {"Error": "task_name is required for adding a new task."}, 400
 
+        if is_a_duplicate(item=self.task_id, collection=tasks.keys()):
+            return {"Error": "task_id already in list."}, 400
+
         if is_a_duplicate(item=self.task_name, collection=tasks.values()):
             return {"Error": "task already in list."}, 400
 
@@ -41,6 +44,9 @@ class Blog(Resource):
 
     def put(self):
         """The put method route will update a task."""
+        if is_a_duplicate(item=self.task_id, collection=tasks.keys()):
+            return {"Error": "task_id already in list."}, 400
+
         if is_a_duplicate(item=self.task_name, collection=tasks.values()):
             return {"Error": "task already in list."}, 400
 
