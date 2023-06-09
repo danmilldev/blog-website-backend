@@ -5,8 +5,8 @@ from flask_restful import Resource, reqparse
 tasks = {1: "my new task", 2: "a really nice task", 3: "the best task"}
 
 blog_post_args = reqparse.RequestParser()
-blog_post_args.add_argument("task_id", type=int, help="The task_id is needed.")
-blog_post_args.add_argument("task_name", type=str, help="The task_name is required.")
+blog_post_args.add_argument("task_id", type=int)
+blog_post_args.add_argument("task_name", type=str)
 
 
 class Blog(Resource):
