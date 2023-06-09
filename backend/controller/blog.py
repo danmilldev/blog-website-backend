@@ -45,7 +45,7 @@ class Blog(Resource):
         """
         if not all([self.post_title, self.post_description]):
             return {
-                "Error": "You need a post_id, post_title, and post_description to create a post."
+                "Error": "You need a post_title, and post_description to create a post."
             }, 400
 
         if self.post_id in posts:
