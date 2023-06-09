@@ -17,7 +17,7 @@ class Blog(Resource):
         This get method route will
         return all tasks stored in the list.
         """
-        return tasks, 200
+        return {"tasks": tasks}, 201
 
     def post(self):
         """
@@ -33,7 +33,7 @@ class Blog(Resource):
         else:
             new_task_id = max(tasks.keys()) + 1
             tasks[new_task_id] = task_name
-            return {"task": tasks}, 201
+            return {"tasks": tasks}, 201
 
     def put(self):
         """The put method route will update a task."""
@@ -46,7 +46,7 @@ class Blog(Resource):
             return {"Error": "task_name is required for a new task name."}, 400
         else:
             tasks[task_id] = task_name
-            return tasks, 200
+            return {"tasks": tasks}, 201
 
     def delete(self):
         """
@@ -61,4 +61,4 @@ class Blog(Resource):
             return {"Error": "Task with that task_id does not exist."}, 400
         else:
             del tasks[task_id]
-            return tasks, 200
+            return {"tasks": tasks}, 201
