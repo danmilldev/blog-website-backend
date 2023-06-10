@@ -1,21 +1,7 @@
 """This file is for all Blog related logic behaviour"""
 from flask_restful import Resource, reqparse
-from models.blog_post import db, BlogPost
+from models.blog_post import BlogPost
 
-posts = {
-    1: {
-        "post_title": "First Blog Post",
-        "post_description": "This is the description of the first blog post.",
-    },
-    2: {
-        "post_title": "Second Blog Post",
-        "post_description": "This is the description of the second blog post.",
-    },
-    3: {
-        "post_title": "Third Blog Post",
-        "post_description": "This is the description of the third blog post.",
-    },
-}
 
 blog_post_args = reqparse.RequestParser()
 blog_post_args.add_argument("post_id", type=int)
@@ -37,8 +23,7 @@ class Blog(Resource):
         This get method will query all database post entrys and
         return them as a json like object.
         """
-        all_posts = BlogPost.get_all()
-        return {"posts": all_posts}, 200
+        return {"posts": BlogPost.get_all()}, 200
 
     def post(self):
         """
@@ -50,20 +35,19 @@ class Blog(Resource):
                 "Error": "You need a post_title, and post_description to create a post."
             }, 400
 
-        if self.post_id in posts:
-            return {"Error": "Post with that pots_id already exists."}, 400
+        new_posts_list = BlogPost.get_all()
 
-        if any(post["post_title"] == self.post_title for post in posts.values()):
-            return {
-                "Error": f"Post with that post_title: ({self.post_title}) already exists."
-            }, 400
+        if self.post_title in [post["post_title"] for post in new_posts_list]:
+            return {"Error": "Post title already exists."}, 400
 
-        new_post_id = max(posts.keys()) + 1
-        posts[new_post_id] = {
-            "post_title": self.post_title,
-            "post_description": self.post_description,
-        }
-        return {"posts": posts}, 201
+        try:
+            new_post = BlogPost(
+                title=self.post_title, description=self.post_description
+            )
+            new_post.save()
+            return {"posts": new_posts_list}, 201
+        except Exception as exc:
+            raise RuntimeError("Failed to save the Blog Post Internal Error.") from exc
 
     def put(self):
         """The put method route will update a post."""

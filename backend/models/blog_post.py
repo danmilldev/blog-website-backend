@@ -9,8 +9,8 @@ class BlogPost(db.Model):
     post_description = db.Column(db.String(255), nullable=False)
 
     def __init__(self, title, description):
-        self.title = title
-        self.description = description
+        self.post_title = title
+        self.post_description = description
 
     def save(self):
         db.session.add(self)
