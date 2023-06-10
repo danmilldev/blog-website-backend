@@ -48,14 +48,11 @@ class Blog(Resource):
         if self.post_title in [post["post_title"] for post in new_posts_list]:
             return {"Error": "Post title already exists."}, 400
 
-        try:
-            new_post = BlogPost(
-                title=self.post_title, description=self.post_description
-            )
-            new_post.save()
-            return {"posts": new_posts_list}, 201
-        except Exception as exc:
-            raise RuntimeError("Failed to save the Blog Post Internal Error.") from exc
+        new_post = BlogPost(title=self.post_title, description=self.post_description)
+        new_post.save()
+
+        new_posts_list = BlogPost.get_all()
+        return {"posts": new_posts_list}, 201
 
     def put(self):
         """The put method route will update a post."""
@@ -96,10 +93,16 @@ class Blog(Resource):
         if self.post_id is None:
             return {"Error": "The post_id is required for removing the post."}, 400
 
-        if self.post_id not in posts:
+        new_posts_list = BlogPost.get_all()
+
+        if self.post_title in [post["post_id"] for post in new_posts_list]:
             return {
                 "Error": f"Post with that post_id: ({self.post_id}) does not exist."
             }, 400
 
-        del posts[self.post_id]
-        return {"posts": posts}, 200
+        to_delete_post = BlogPost.get_by_id(self.post_id)
+        to_delete_post.delete()
+
+        new_posts_list = BlogPost.get_all()
+
+        return {"posts": new_posts_list}, 200
