@@ -51,18 +51,48 @@ class Blog(Resource):
 
     def put(self):
         """The put method route will update a post."""
-        if self.post_id is None:
+
+        # check if all needed parameters are set
+        if self.post_id is None or not all([self.post_title, self.post_description]):
             return {
-                "Error": "To change a post you are required to enter a post_id."
+                "Error": "You need a post_id, post_title, and post_description to change a post."
             }, 400
 
-        if self.post_id not in posts:
+        to_change_post = BlogPost.get_by_id(self.post_id)
+
+        if to_change_post is None:
             return {
-                "Error": f"Post with that post_id: ({self.post_id}) does not exist."
+                "Error": f"Post with post_id {self.post_id} does not exist in get_by_id."
             }, 400
 
-        posts[self.post_id] = self.post_title
-        return {"posts": posts}, 201
+        to_change_post.post_title = self.post_title
+        to_change_post.post_description = self.post_description
+        to_change_post.update()
+
+        new_posts_list = BlogPost.get_all()
+
+        # Check if the post with the specified post_id exists
+        post_exists = False
+        for post in new_posts_list:
+            if post["post_id"] == self.post_id:
+                post_exists = True
+                break
+
+        if not post_exists:
+            return {"Error": f"Post with post_id ({self.post_id}) does not exist."}, 400
+
+        post_title_exists = False
+        for post in new_posts_list:
+            if post["post_title"] == self.post_title:
+                post_exists = True
+                break
+
+        if not post_title_exists:
+            return {
+                "Error": f"Post with post_title ({self.post_title}) does already exist."
+            }, 400
+
+        return {"posts": new_posts_list}, 201
 
     def delete(self):
         """

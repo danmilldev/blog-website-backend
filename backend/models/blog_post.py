@@ -31,7 +31,7 @@ class BlogPost(db.Model):
 
     @staticmethod
     def get_by_id(post_id):
-        return BlogPost.query.get(post_id)
+        return BlogPost.query.filter_by(id=post_id).first()
 
     def update(self):
         db.session.commit()
