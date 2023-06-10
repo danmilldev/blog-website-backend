@@ -66,9 +66,11 @@ class Blog(Resource):
                 "Error": "You need a post_id, post_title, and post_description to change a post."
             }, 400
 
+        to_change_post = BlogPost.get_by_id(self.post_id)
+
         # Check if the post with the specified post_id not exists
 
-        if not check_for_post("post_id", self.post_id):
+        if not check_for_post("post_id", self.post_id) or to_change_post is None:
             return {"Error": f"Post with post_id ({self.post_id}) does not exist."}, 400
 
         # check if a post witht he same title already exists
@@ -76,13 +78,6 @@ class Blog(Resource):
         if check_for_post("post_title", self.post_title):
             return {
                 "Error": f"Post with post_title ({self.post_title}) does already exist."
-            }, 400
-
-        to_change_post = BlogPost.get_by_id(self.post_id)
-
-        if to_change_post is None:
-            return {
-                "Error": f"Post with post_id {self.post_id} does not exist in get_by_id."
             }, 400
 
         to_change_post.post_title = self.post_title
