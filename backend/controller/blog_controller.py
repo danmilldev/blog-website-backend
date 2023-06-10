@@ -1,5 +1,6 @@
 """This file is for all Blog related logic behaviour"""
 from flask_restful import Resource, reqparse
+from models.blog_post import db, BlogPost
 
 posts = {
     1: {
@@ -33,10 +34,11 @@ class Blog(Resource):
 
     def get(self):
         """
-        This get method route will
-        return all posts stored in the list.
+        This get method will query all database post entrys and
+        return them as a json like object.
         """
-        return {"posts": posts}, 200
+        all_posts = BlogPost.get_all()
+        return {"posts": all_posts}, 200
 
     def post(self):
         """
@@ -49,7 +51,7 @@ class Blog(Resource):
             }, 400
 
         if self.post_id in posts:
-            return {"Error": "Post with that post_id already exists."}, 400
+            return {"Error": "Post with that pots_id already exists."}, 400
 
         if any(post["post_title"] == self.post_title for post in posts.values()):
             return {

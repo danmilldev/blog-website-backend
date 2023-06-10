@@ -1,9 +1,9 @@
 import os
+from controller.blog_controller import Blog
 from flask import Flask
 from flask_restful import Api
-from routes.blog_routes import blog_routes
-from flask_sqlalchemy import SQLAlchemy
 from dotenv import load_dotenv
+from models.blog_post import db
 
 load_dotenv(".env")
 
@@ -13,9 +13,9 @@ api = Api(app)
 
 app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL")
 
-db = SQLAlchemy(app)
+db.init_app(app)
 
-blog_routes(api=api)
+api.add_resource(Blog, "/blog")
 
 if __name__ == "__name__":
     app.run(debug=True)
