@@ -9,6 +9,14 @@ blog_post_args.add_argument("post_title", type=str)
 blog_post_args.add_argument("post_description", type=str)
 
 
+def check_for_post(valueName: str, value):
+    new_posts_list = BlogPost.get_all()
+    for post in new_posts_list:
+        if post[valueName] == value:
+            return True
+    return False
+
+
 class Blog(Resource):
     """This Route is for the main blog requests"""
 
@@ -58,6 +66,18 @@ class Blog(Resource):
                 "Error": "You need a post_id, post_title, and post_description to change a post."
             }, 400
 
+        # Check if the post with the specified post_id not exists
+
+        if not check_for_post("post_id", self.post_id):
+            return {"Error": f"Post with post_id ({self.post_id}) does not exist."}, 400
+
+        # check if a post witht he same title already exists
+
+        if check_for_post("post_title", self.post_title):
+            return {
+                "Error": f"Post with post_title ({self.post_title}) does already exist."
+            }, 400
+
         to_change_post = BlogPost.get_by_id(self.post_id)
 
         if to_change_post is None:
@@ -70,27 +90,6 @@ class Blog(Resource):
         to_change_post.update()
 
         new_posts_list = BlogPost.get_all()
-
-        # Check if the post with the specified post_id exists
-        post_exists = False
-        for post in new_posts_list:
-            if post["post_id"] == self.post_id:
-                post_exists = True
-                break
-
-        if not post_exists:
-            return {"Error": f"Post with post_id ({self.post_id}) does not exist."}, 400
-
-        post_title_exists = False
-        for post in new_posts_list:
-            if post["post_title"] == self.post_title:
-                post_exists = True
-                break
-
-        if not post_title_exists:
-            return {
-                "Error": f"Post with post_title ({self.post_title}) does already exist."
-            }, 400
 
         return {"posts": new_posts_list}, 201
 
